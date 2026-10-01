@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ARTIPACK! — Pembeli</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .modal {
+            background: rgba(0,0,0,.55);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ======================================================
+     JSONBIN CONFIG
+====================================================== -->
+
+<script>
+
+const BIN_ID = "6abe4406ffd5d160534265c2";
+
+const API_KEY =
+"$2a$10$Z8DwuIumJefrLUkPOduwHOnKvPMbPU4rdLLuChaVG9xPsPm.1kyya";
+
+const API_URL =
+`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+
+/* ======================================================
+   GET DATABASE
+====================================================== */
+
+async function getDatabase() {
+
+    try {
+
+        const response = await fetch(API_URL, {
+
+            method: "GET",
+
+            headers: {
+                "X-Master-Key": API_KEY
+            }
+
+        });
+
+        if (!response.ok) {
+            throw new Error("Database gagal diakses");
+        }
+
+        const result =
+            await response.json();
+
+        return result.record;
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Tidak dapat terhubung ke database ARTIPACK."
+        );
+
+        return null;
+    }
+}
+
+
+/* ======================================================
+   SAVE DATABASE
+====================================================== */
+
+async function saveDatabase(database) {
+
+    try {
+
+        const response = await fetch(API_URL, {
+
+            method: "PUT",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json",
+
+                "X-Master-Key":
+                    API_KEY,
+
+                "X-Bin-Versioning":
+                    "true"
+
+            },
+
+            body:
+                JSON.stringify(database)
+
+        });
+
+        return response.ok;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return false;
+
+    }
+
+}
+
+</script>
+
+
+<!-- ======================================================
+     NAVBAR
+====================================================== -->
+
+<nav class="bg-emerald-950 text-white sticky top-0 z-50">
+
+    <div
+        class="max-w-7xl mx-auto px-5 h-20 flex items-center justify-between">
+
+        <div>
+
+            <h1 class="text-2xl font-extrabold">
+
+                ARTI<span class="text-emerald-300">
+                    PACK!
+                </span>
+
+            </h1>
+
+            <p class="text-xs text-emerald-300">
+
+                Portal Pembeli
+
+            </p>
+
+        </div>
+
+
+        <button
+            onclick="openCart()"
+            class="relative bg-emerald-700 px-5 py-3 rounded-xl">
+
+            <i class="fa-solid fa-cart-shopping"></i>
+
+            <span
+                id="cartCount"
+                class="absolute -top-2 -right-2
+                bg-red-500 w-6 h-6 rounded-full
+                text-xs flex items-center justify-center">
+
+                0
+
+            </span>
+
+        </button>
+
+    </div>
+
+</nav>
+
+
+<!-- ======================================================
+     HERO
+====================================================== -->
+
+<section class="bg-emerald-50">
+
+    <div
+        class="max-w-7xl mx-auto px-5 py-20">
+
+        <div class="max-w-2xl">
+
+            <span
+                class="inline-block bg-emerald-100
+                text-emerald-700 px-4 py-2
+                rounded-full text-sm font-bold">
+
+                Packaging UMKM
+
+            </span>
+
+
+            <h2
+                class="text-5xl font-extrabold
+                text-emerald-950 mt-5">
+
+                Kemasan Lebih
+                <span class="text-emerald-600">
+                    Menarik.
+                </span>
+
+            </h2>
+
+
+            <p
+                class="text-slate-600 mt-5 leading-relaxed">
+
+                Temukan packaging, stiker custom,
+                dan keripik sukun dari ARTIPACK.
+
+            </p>
+
+
+            <button
+                onclick="scrollToProducts()"
+                class="mt-7 bg-emerald-700
+                text-white px-6 py-3 rounded-xl
+                font-bold">
+
+                Belanja Sekarang
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     PRODUCTS
+====================================================== -->
+
+<section
+    id="products"
+    class="max-w-7xl mx-auto px-5 py-16">
+
+    <div class="mb-8">
+
+        <h2
+            class="text-3xl font-extrabold text-emerald-950">
+
+            Produk ARTIPACK
+
+        </h2>
+
+        <p class="text-slate-500 mt-2">
+
+            Produk terbaru dari database seller.
+
+        </p>
+
+    </div>
+
+
+    <div
+        id="productGrid"
+        class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div
+            class="col-span-full text-center py-20">
+
+            <i
+                class="fa-solid fa-spinner fa-spin
+                text-3xl text-emerald-600">
+            </i>
+
+            <p class="mt-3">
+                Memuat produk...
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     CART MODAL
+====================================================== -->
+
+<div
+    id="cartModal"
+    class="modal hidden fixed inset-0
+    z-50 flex items-center justify-center p-5">
+
+    <div
+        class="bg-white rounded-3xl
+        max-w-lg w-full max-h-[90vh]
+        overflow-y-auto">
+
+        <div
+            class="p-6 border-b
+            flex justify-between">
+
+            <h2 class="text-xl font-extrabold">
+
+                Keranjang
+
+            </h2>
+
+            <button onclick="closeCart()">
+
+                <i class="fa-solid fa-xmark text-xl"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="cartItems"
+            class="p-6">
+
+        </div>
+
+
+        <div
+            class="p-6 border-t">
+
+            <div
+                class="flex justify-between
+                font-bold text-lg">
+
+                <span>
+                    Total
+                </span>
+
+                <span id="cartTotal">
+                    Rp0
+                </span>
+
+            </div>
+
+
+            <button
+                onclick="openCheckout()"
+                class="w-full mt-5
+                bg-emerald-700
+                text-white py-3 rounded-xl
+                font-bold">
+
+                Checkout
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     CHECKOUT
+====================================================== -->
+
+<div
+    id="checkoutModal"
+    class="modal hidden fixed inset-0
+    z-50 flex items-center justify-center p-5">
+
+    <div
+        class="bg-white rounded-3xl
+        max-w-lg w-full">
+
+        <div class="p-6 border-b">
+
+            <h2 class="text-xl font-extrabold">
+
+                Checkout
+
+            </h2>
+
+        </div>
+
+
+        <form
+            onsubmit="createOrder(event)"
+            class="p-6 space-y-4">
+
+            <input
+                id="buyerName"
+                required
+                placeholder="Nama lengkap"
+                class="w-full border p-3 rounded-xl">
+
+
+            <input
+                id="buyerWhatsapp"
+                required
+                placeholder="Nomor WhatsApp"
+                class="w-full border p-3 rounded-xl">
+
+
+            <textarea
+                id="buyerAddress"
+                required
+                placeholder="Alamat lengkap"
+                class="w-full border p-3 rounded-xl"></textarea>
+
+
+            <select
+                id="payment"
+                class="w-full border p-3 rounded-xl">
+
+                <option value="COD">
+                    COD / Tunai
+                </option>
+
+                <option value="BRI">
+                    Transfer BRI
+                </option>
+
+                <option value="DANA">
+                    DANA
+                </option>
+
+                <option value="OVO">
+                    OVO
+                </option>
+
+            </select>
+
+
+            <button
+                class="w-full bg-emerald-700
+                text-white py-3 rounded-xl
+                font-bold">
+
+                Buat Pesanan
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ======================================================
+   STATE
+====================================================== */
+
+let database = null;
+
+let cart = [];
+
+
+/* ======================================================
+   RUPIAH
+====================================================== */
+
+function rupiah(value) {
+
+    return "Rp" +
+        Number(value || 0)
+        .toLocaleString("id-ID");
+
+}
+
+
+/* ======================================================
+   LOAD PRODUCTS
+====================================================== */
+
+async function loadProducts() {
+
+    database =
+        await getDatabase();
+
+    if (!database) return;
+
+
+    const products =
+        database.products || [];
+
+
+    const grid =
+        document.getElementById(
+            "productGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    products
+        .filter(p => p.active !== false)
+        .forEach(product => {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "bg-white rounded-3xl
+                overflow-hidden shadow-sm
+                hover:shadow-xl transition";
+
+
+            card.innerHTML = `
+
+                <img
+                    src="${product.image || 'https://via.placeholder.com/600x400'}"
+                    class="w-full h-52 object-cover">
+
+
+                <div class="p-5">
+
+                    <span
+                        class="text-xs font-bold
+                        text-emerald-600">
+
+                        ${product.category || "Produk"}
+
+                    </span>
+
+
+                    <h3
+                        class="text-lg font-extrabold mt-2">
+
+                        ${product.name}
+
+                    </h3>
+
+
+                    <p
+                        class="text-sm text-slate-500
+                        mt-2">
+
+                        ${product.description || ""}
+
+                    </p>
+
+
+                    <div
+                        class="flex justify-between
+                        items-center mt-5">
+
+                        <div>
+
+                            <p
+                                class="text-xl font-extrabold
+                                text-emerald-700">
+
+                                ${rupiah(product.price)}
+
+                            </p>
+
+                            <p
+                                class="text-xs text-slate-400">
+
+                                Stok: ${product.stock}
+
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            onclick='addToCart(${JSON.stringify(product)})'
+                            class="bg-emerald-700
+                            text-white w-11 h-11
+                            rounded-xl">
+
+                            <i
+                                class="fa-solid fa-cart-plus">
+                            </i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+
+            grid.appendChild(card);
+
+        });
+
+}
+
+
+/* ======================================================
+   CART
+====================================================== */
+
+function addToCart(product) {
+
+    const existing =
+        cart.find(
+            item =>
+                item.id === product.id
+        );
+
+
+    if (existing) {
+
+        existing.quantity++;
+
+    } else {
+
+        cart.push({
+
+            ...product,
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    renderCart();
+
+}
+
+
+function renderCart() {
+
+    const container =
+        document.getElementById(
+            "cartItems"
+        );
+
+
+    const count =
+        cart.reduce(
+            (sum, item) =>
+                sum + item.quantity,
+            0
+        );
+
+
+    document
+        .getElementById("cartCount")
+        .textContent = count;
+
+
+    let total = 0;
+
+
+    if (!cart.length) {
+
+        container.innerHTML = `
+
+            <p
+                class="text-center
+                text-slate-500 py-10">
+
+                Keranjang kosong.
+
+            </p>
+
+        `;
+
+    } else {
+
+        container.innerHTML = "";
+
+        cart.forEach(
+            (item, index) => {
+
+                total +=
+                    item.price *
+                    item.quantity;
+
+
+                container.innerHTML += `
+
+                    <div
+                        class="flex gap-4
+                        border-b py-4">
+
+                        <img
+                            src="${item.image}"
+                            class="w-16 h-16
+                            rounded-xl object-cover">
+
+
+                        <div class="flex-1">
+
+                            <h4 class="font-bold">
+
+                                ${item.name}
+
+                            </h4>
+
+                            <p
+                                class="text-emerald-600">
+
+                                ${rupiah(item.price)}
+
+                            </p>
+
+
+                            <div class="flex gap-3 mt-2">
+
+                                <button
+                                    onclick="changeQty(${index},-1)"
+                                    class="border
+                                    rounded px-2">
+
+                                    -
+
+                                </button>
+
+                                <span>
+
+                                    ${item.quantity}
+
+                                </span>
+
+                                <button
+                                    onclick="changeQty(${index},1)"
+                                    class="border
+                                    rounded px-2">
+
+                                    +
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+    }
+
+
+    document
+        .getElementById("cartTotal")
+        .textContent =
+        rupiah(total);
+
+}
+
+
+function changeQty(index, value) {
+
+    cart[index].quantity += value;
+
+
+    if (
+        cart[index].quantity <= 0
+    ) {
+
+        cart.splice(index,1);
+
+    }
+
+
+    renderCart();
+
+}
+
+
+function openCart() {
+
+    document
+        .getElementById("cartModal")
+        .classList.remove("hidden");
+
+    renderCart();
+
+}
+
+
+function closeCart() {
+
+    document
+        .getElementById("cartModal")
+        .classList.add("hidden");
+
+}
+
+
+/* ======================================================
+   CHECKOUT
+====================================================== */
+
+function openCheckout() {
+
+    if (!cart.length) {
+
+        alert(
+            "Keranjang masih kosong."
+        );
+
+        return;
+
+    }
+
+
+    closeCart();
+
+
+    document
+        .getElementById("checkoutModal")
+        .classList.remove("hidden");
+
+}
+
+
+async function createOrder(event) {
+
+    event.preventDefault();
+
+
+    database =
+        await getDatabase();
+
+
+    if (!database) return;
+
+
+    const total =
+        cart.reduce(
+            (sum, item) =>
+                sum +
+                item.price *
+                item.quantity,
+            0
+        );
+
+
+    const order = {
+
+        id:
+            "ORD-" +
+            Date.now(),
+
+        buyer: {
+
+            name:
+                document
+                .getElementById(
+                    "buyerName"
+                ).value,
+
+            whatsapp:
+                document
+                .getElementById(
+                    "buyerWhatsapp"
+                ).value,
+
+            address:
+                document
+                .getElementById(
+                    "buyerAddress"
+                ).value
+
+        },
+
+        items:
+            cart.map(item => ({
+
+                id: item.id,
+
+                name: item.name,
+
+                price: item.price,
+
+                quantity: item.quantity
+
+            })),
+
+        total: total,
+
+        payment:
+            document
+            .getElementById(
+                "payment"
+            ).value,
+
+        status:
+            "pending",
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    if (!database.orders) {
+
+        database.orders = [];
+
+    }
+
+
+    database.orders.push(order);
+
+
+    const success =
+        await saveDatabase(
+            database
+        );
+
+
+    if (success) {
+
+        alert(
+            "Pesanan berhasil!\n\n" +
+            "ID: " +
+            order.id
+        );
+
+
+        cart = [];
+
+        renderCart();
+
+        document
+            .getElementById(
+                "checkoutModal"
+            )
+            .classList.add("hidden");
+
+    }
+
+}
+
+
+/* ======================================================
+   SCROLL
+====================================================== */
+
+function scrollToProducts() {
+
+    document
+        .getElementById(
+            "products"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+/* ======================================================
+   START
+====================================================== */
+
+loadProducts();
+
+</script>
+
+</body>
+</html>
