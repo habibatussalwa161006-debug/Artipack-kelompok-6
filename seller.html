@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>ARTIPACK! — Seller</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        body {
+            font-family:
+                'Plus Jakarta Sans',
+                sans-serif;
+        }
+
+    </style>
+
+</head>
+
+
+<body class="bg-slate-100 text-slate-800">
+
+
+<!-- ======================================================
+     JSONBIN CONFIG
+====================================================== -->
+
+<script>
+
+const BIN_ID =
+"6abe4406ffd5d160534265c2";
+
+const API_KEY =
+"$2a$10$Z8DwuIumJefrLUkPOduwHOnKvPMbPU4rdLLuChaVG9xPsPm.1kyya";
+
+const API_URL =
+`https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+
+/* ======================================================
+   GET DATABASE
+====================================================== */
+
+async function getDatabase() {
+
+    try {
+
+        const response =
+            await fetch(API_URL, {
+
+                method: "GET",
+
+                headers: {
+
+                    "X-Master-Key":
+                        API_KEY
+
+                }
+
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Database error"
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        return result.record;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Database ARTIPACK gagal diakses."
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* ======================================================
+   SAVE DATABASE
+====================================================== */
+
+async function saveDatabase(database) {
+
+    try {
+
+        const response =
+            await fetch(API_URL, {
+
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "X-Master-Key":
+                        API_KEY,
+
+                    "X-Bin-Versioning":
+                        "true"
+
+                },
+
+                body:
+                    JSON.stringify(database)
+
+            });
+
+
+        return response.ok;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        return false;
+
+    }
+
+}
+
+</script>
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<header
+    class="bg-emerald-950 text-white">
+
+    <div
+        class="max-w-7xl mx-auto px-5 h-20
+        flex items-center justify-between">
+
+        <div>
+
+            <h1
+                class="text-2xl font-extrabold">
+
+                ARTI<span
+                    class="text-emerald-300">
+
+                    PACK!
+
+                </span>
+
+            </h1>
+
+            <p
+                class="text-xs text-emerald-300">
+
+                Seller Dashboard
+
+            </p>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="bg-emerald-700
+            px-5 py-3 rounded-xl">
+
+            <i class="fa-solid fa-store"></i>
+
+            Portal Pembeli
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ======================================================
+     LOGIN
+====================================================== -->
+
+<section
+    id="loginPage"
+    class="min-h-[80vh]
+    flex items-center justify-center px-5">
+
+    <div
+        class="bg-white rounded-3xl
+        shadow-xl p-8 w-full max-w-md">
+
+        <div
+            class="text-center mb-7">
+
+            <div
+                class="w-16 h-16 mx-auto
+                bg-emerald-100
+                text-emerald-700
+                rounded-2xl
+                flex items-center justify-center">
+
+                <i
+                    class="fa-solid fa-user-tie text-2xl">
+                </i>
+
+            </div>
+
+
+            <h2
+                class="text-2xl font-extrabold mt-5">
+
+                Seller Login
+
+            </h2>
+
+
+            <p
+                class="text-slate-500 text-sm mt-2">
+
+                Masuk ke dashboard ARTIPACK.
+
+            </p>
+
+        </div>
+
+
+        <form
+            onsubmit="login(event)"
+            class="space-y-4">
+
+            <input
+                value="Tim Kelompok 6"
+                readonly
+                class="w-full border p-3
+                rounded-xl bg-slate-100">
+
+
+            <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                required
+                class="w-full border p-3
+                rounded-xl">
+
+
+            <button
+                class="w-full
+                bg-emerald-700
+                text-white py-3
+                rounded-xl font-bold">
+
+                Masuk
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     DASHBOARD
+====================================================== -->
+
+<section
+    id="dashboard"
+    class="hidden">
+
+    <main
+        class="max-w-7xl mx-auto px-5 py-10">
+
+
+        <div
+            class="flex justify-between
+            items-center mb-8">
+
+            <div>
+
+                <h2
+                    class="text-3xl font-extrabold
+                    text-emerald-950">
+
+                    Dashboard Seller
+
+                </h2>
+
+                <p class="text-slate-500">
+
+                    Kelola produk dan pesanan ARTIPACK.
+
+                </p>
+
+            </div>
+
+
+            <button
+                onclick="loadDashboard()"
+                class="bg-white border
+                px-4 py-2 rounded-xl">
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Refresh
+
+            </button>
+
+        </div>
+
+
+        <!-- ==================================================
+             STATISTICS
+        ================================================== -->
+
+        <div
+            class="grid md:grid-cols-3 gap-5 mb-8">
+
+
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm">
+
+                <p class="text-slate-500 text-sm">
+
+                    Total Produk
+
+                </p>
+
+                <h3
+                    id="totalProducts"
+                    class="text-3xl font-extrabold
+                    text-emerald-700">
+
+                    0
+
+                </h3>
+
+            </div>
+
+
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm">
+
+                <p class="text-slate-500 text-sm">
+
+                    Total Pesanan
+
+                </p>
+
+                <h3
+                    id="totalOrders"
+                    class="text-3xl font-extrabold
+                    text-blue-600">
+
+                    0
+
+                </h3>
+
+            </div>
+
+
+            <div
+                class="bg-white p-6 rounded-2xl shadow-sm">
+
+                <p class="text-slate-500 text-sm">
+
+                    Pesanan Pending
+
+                </p>
+
+                <h3
+                    id="pendingOrders"
+                    class="text-3xl font-extrabold
+                    text-orange-500">
+
+                    0
+
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             PRODUCT MANAGEMENT
+        ================================================== -->
+
+        <div
+            class="bg-white rounded-3xl
+            shadow-sm mb-8 overflow-hidden">
+
+            <div
+                class="p-6 border-b
+                flex justify-between
+                items-center">
+
+                <div>
+
+                    <h3
+                        class="text-xl font-extrabold">
+
+                        Kelola Produk
+
+                    </h3>
+
+                    <p
+                        class="text-sm text-slate-500">
+
+                        Perubahan akan tersimpan ke JSONBin.
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    onclick="addProduct()"
+                    class="bg-emerald-700
+                    text-white px-4 py-2
+                    rounded-xl font-bold">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Tambah Produk
+
+                </button>
+
+            </div>
+
+
+            <div class="overflow-x-auto">
+
+                <table
+                    class="w-full text-sm">
+
+                    <thead
+                        class="bg-slate-50">
+
+                        <tr>
+
+                            <th
+                                class="p-4 text-left">
+
+                                Produk
+
+                            </th>
+
+                            <th class="p-4">
+
+                                Harga
+
+                            </th>
+
+                            <th class="p-4">
+
+                                Stok
+
+                            </th>
+
+                            <th class="p-4">
+
+                                Status
+
+                            </th>
+
+                            <th class="p-4">
+
+                                Aksi
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="productsTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             ORDER MANAGEMENT
+        ================================================== -->
+
+        <div
+            class="bg-white rounded-3xl
+            shadow-sm overflow-hidden">
+
+            <div class="p-6 border-b">
+
+                <h3
+                    class="text-xl font-extrabold">
+
+                    Pesanan Masuk
+
+                </h3>
+
+            </div>
+
+
+            <div class="overflow-x-auto">
+
+                <table
+                    class="w-full text-sm">
+
+                    <thead
+                        class="bg-slate-50">
+
+                        <tr>
+
+                            <th class="p-4 text-left">
+                                ID
+                            </th>
+
+                            <th class="p-4 text-left">
+                                Pembeli
+                            </th>
+
+                            <th class="p-4">
+                                Total
+                            </th>
+
+                            <th class="p-4">
+                                Pembayaran
+                            </th>
+
+                            <th class="p-4">
+                                Status
+                            </th>
+
+                            <th class="p-4">
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="ordersTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</section>
+
+
+<script>
+
+/* ======================================================
+   DATABASE
+====================================================== */
+
+let database = null;
+
+
+/* ======================================================
+   LOGIN
+====================================================== */
+
+function login(event) {
+
+    event.preventDefault();
+
+
+    const password =
+        document
+        .getElementById(
+            "password"
+        ).value;
+
+
+    /*
+       Password demo.
+       Ganti sesuai kebutuhan.
+    */
+
+    if (
+        password !==
+        "artipack2026"
+    ) {
+
+        alert(
+            "Password salah."
+        );
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "loginPage"
+        )
+        .classList.add("hidden");
+
+
+    document
+        .getElementById(
+            "dashboard"
+        )
+        .classList.remove("hidden");
+
+
+    loadDashboard();
+
+}
+
+
+/* ======================================================
+   LOAD DASHBOARD
+====================================================== */
+
+async function loadDashboard() {
+
+    database =
+        await getDatabase();
+
+
+    if (!database) return;
+
+
+    renderProducts();
+
+    renderOrders();
+
+}
+
+
+/* ======================================================
+   RUPIAH
+====================================================== */
+
+function rupiah(value) {
+
+    return "Rp" +
+        Number(value || 0)
+        .toLocaleString("id-ID");
+
+}
+
+
+/* ======================================================
+   RENDER PRODUCTS
+====================================================== */
+
+function renderProducts() {
+
+    const products =
+        database.products || [];
+
+
+    document
+        .getElementById(
+            "totalProducts"
+        )
+        .textContent =
+        products.length;
+
+
+    const table =
+        document
+        .getElementById(
+            "productsTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    products.forEach(
+        (product, index) => {
+
+            table.innerHTML += `
+
+                <tr class="border-b">
+
+                    <td class="p-4">
+
+                        <div
+                            class="flex items-center gap-3">
+
+                            <img
+                                src="${product.image || 'https://via.placeholder.com/100'}"
+                                class="w-12 h-12
+                                rounded-lg
+                                object-cover">
+
+
+                            <input
+                                id="name-${index}"
+                                value="${product.name}"
+                                class="border
+                                rounded-lg p-2
+                                font-bold">
+
+                        </div>
+
+                    </td>
+
+
+                    <td class="p-4">
+
+                        <input
+                            id="price-${index}"
+                            type="number"
+                            value="${product.price}"
+                            class="border
+                            rounded-lg p-2
+                            w-32">
+
+                    </td>
+
+
+                    <td class="p-4">
+
+                        <input
+                            id="stock-${index}"
+                            type="number"
+                            value="${product.stock}"
+                            class="border
+                            rounded-lg p-2
+                            w-24">
+
+                    </td>
+
+
+                    <td class="p-4">
+
+                        <button
+                            onclick="toggleProduct(${index})"
+                            class="font-bold
+                            ${
+                                product.active !== false
+                                ? "text-emerald-600"
+                                : "text-red-500"
+                            }">
+
+                            ${
+                                product.active !== false
+                                ? "Aktif"
+                                : "Nonaktif"
+                            }
+
+                        </button>
+
+                    </td>
+
+
+                    <td class="p-4">
+
+                        <button
+                            onclick="saveProduct(${index})"
+                            class="bg-emerald-700
+                            text-white
+                            px-3 py-2
+                            rounded-lg">
+
+                            Simpan
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+}
+
+
+/* ======================================================
+   SAVE PRODUCT
+====================================================== */
+
+async function saveProduct(index) {
+
+    const product =
+        database.products[index];
+
+
+    product.name =
+        document
+        .getElementById(
+            `name-${index}`
+        ).value;
+
+
+    product.price =
+        Number(
+            document
+            .getElementById(
+                `price-${index}`
+            ).value
+        );
+
+
+    product.stock =
+        Number(
+            document
+            .getElementById(
+                `stock-${index}`
+            ).value
+        );
+
+
+    const success =
+        await saveDatabase(
+            database
+        );
+
+
+    if (success) {
+
+        alert(
+            "Produk berhasil diperbarui."
+        );
+
+        renderProducts();
+
+    }
+
+}
+
+
+/* ======================================================
+   TOGGLE PRODUCT
+====================================================== */
+
+async function toggleProduct(index) {
+
+    database
+        .products[index]
+        .active =
+        database
+        .products[index]
+        .active === false;
+
+
+    const success =
+        await saveDatabase(
+            database
+        );
+
+
+    if (success) {
+
+        renderProducts();
+
+    }
+
+}
+
+
+/* ======================================================
+   ADD PRODUCT
+====================================================== */
+
+async function addProduct() {
+
+    const name =
+        prompt(
+            "Nama produk:"
+        );
+
+
+    if (!name) return;
+
+
+    const price =
+        Number(
+            prompt(
+                "Harga produk:"
+            ) || 0
+        );
+
+
+    const product = {
+
+        id:
+            "P" +
+            Date.now(),
+
+        name:
+
+            name,
+
+        category:
+            "Kemasan",
+
+        description:
+            "Produk ARTIPACK",
+
+        price:
+
+            price,
+
+        stock:
+
+            100,
+
+        image:
+
+            "https://via.placeholder.com/600x400?text=ARTIPACK",
+
+        active:
+
+            true
+
+    };
+
+
+    database.products.push(
+        product
+    );
+
+
+    const success =
+        await saveDatabase(
+            database
+        );
+
+
+    if (success) {
+
+        alert(
+            "Produk berhasil ditambahkan."
+        );
+
+        renderProducts();
+
+    }
+
+}
+
+
+/* ======================================================
+   ORDERS
+====================================================== */
+
+function renderOrders() {
+
+    const orders =
+        database.orders || [];
+
+
+    document
+        .getElementById(
+            "totalOrders"
+        )
+        .textContent =
+        orders.length;
+
+
+    const pending =
+        orders.filter(
+            order =>
+                order.status ===
+                "pending"
+        ).length;
+
+
+    document
+        .getElementById(
+            "pendingOrders"
+        )
+        .textContent =
+        pending;
+
+
+    const table =
+        document
+        .getElementById(
+            "ordersTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (!orders.length) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="p-10
+                    text-center
+                    text-slate-500">
+
+                    Belum ada pesanan.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    orders
+        .slice()
+        .reverse()
+        .forEach(
+            order => {
+
+                table.innerHTML += `
+
+                    <tr class="border-b">
+
+                        <td
+                            class="p-4 font-bold">
+
+                            ${order.id}
+
+                        </td>
+
+
+                        <td class="p-4">
+
+                            <strong>
+
+                                ${order.buyer.name}
+
+                            </strong>
+
+                            <br>
+
+                            <span
+                                class="text-xs
+                                text-slate-500">
+
+                                ${order.buyer.whatsapp}
+
+                            </span>
+
+                        </td>
+
+
+                        <td
+                            class="p-4 font-bold">
+
+                            ${rupiah(order.total)}
+
+                        </td>
+
+
+                        <td class="p-4">
+
+                            ${order.payment}
+
+                        </td>
+
+
+                        <td class="p-4">
+
+                            <span
+                                class="font-bold">
+
+                                ${order.status}
+
+                            </span>
+
+                        </td>
+
+
+                        <td class="p-4">
+
+                            <button
+                                onclick="nextStatus('${order.id}')"
+                                class="bg-emerald-700
+                                text-white
+                                px-3 py-2
+                                rounded-lg">
+
+                                Update
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+}
+
+
+/* ======================================================
+   UPDATE ORDER STATUS
+====================================================== */
+
+async function nextStatus(id) {
+
+    const order =
+        database.orders.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!order) return;
+
+
+    if (
+        order.status ===
+        "pending"
+    ) {
+
+        order.status =
+            "processing";
+
+    }
+
+    else if (
+        order.status ===
+        "processing"
+    ) {
+
+        order.status =
+            "completed";
+
+    }
+
+    else {
+
+        order.status =
+            "pending";
+
+    }
+
+
+    const success =
+        await saveDatabase(
+            database
+        );
+
+
+    if (success) {
+
+        renderOrders();
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
